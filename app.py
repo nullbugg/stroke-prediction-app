@@ -8,10 +8,10 @@ import os
 voting_model = joblib.load('stroke_voting_model.pkl')
 scaler = joblib.load('stroke_scaler.pkl')
 
-# 2. Define the Columns
+# 2. Define the Columns (FIXED to match your Label Encoding)
 all_columns = [
     'age', 'avg_glucose_level', 'bmi', 'hypertension', 'heart_disease', 
-    'gender_Male', 'ever_married_Yes', 'Residence_type_Urban', 
+    'gender', 'ever_married', 'Residence_type', 
     'work_type_Never_worked', 'work_type_Private', 'work_type_Self-employed', 'work_type_children',
     'smoking_status_formerly smoked', 'smoking_status_never smoked', 'smoking_status_smokes',
     'comorbidity_index', 'age_glucose_interaction'
