@@ -8,10 +8,7 @@ import os
 voting_model = joblib.load('stroke_voting_model.pkl')
 scaler = joblib.load('stroke_scaler.pkl')
 
-# ---------------------------------------------------------
-# 🚨 THE FIX: Hardcode the 17 columns exactly as they appeared during training
-# (Adjust this list if your one-hot encoded column names are slightly different!)
-# ---------------------------------------------------------
+# 2. Define the Columns
 all_columns = [
     'age', 'avg_glucose_level', 'bmi', 'hypertension', 'heart_disease', 
     'gender_Male', 'ever_married_Yes', 'Residence_type_Urban', 
@@ -32,7 +29,9 @@ lifestyle_keywords = ['smoking']
 group_demographics = [c for c in user_cols if any(k in c.lower() for k in demo_keywords)]
 group_vitals = [c for c in user_cols if any(k in c.lower() for k in vital_keywords)]
 group_work = [c for c in user_cols if any(k in c.lower() for k in work_keywords)]
-group_lifestyle = [c for c in user_cols if c not in group_demographics + group_vitals + group_work]
+group_lifestyle = [c for c in user_cols if any(k in c.lower() for k in lifestyle_keywords)]
+# 🚨 RESTORED THIS MISSING LINE!
+group_other = [c for c in user_cols if c not in group_demographics + group_vitals + group_work + group_lifestyle]
 
 # 3. The Prediction Function
 def predict_stroke(*args):
@@ -94,8 +93,8 @@ button.primary:hover { background: linear-gradient(135deg, rgba(255, 255, 255, 0
 input[type="number"], input[type="text"], textarea { background: rgba(255, 255, 255, 0.1) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; color: white !important; border-radius: 10px !important; }
 """
 
-# 6. Build UI
-with gr.Blocks(css=liquid_glass_css, theme=gr.themes.Base(neutral_hue="slate")) as app:
+# 6. Build UI (Fixed for Gradio 6.0)
+with gr.Blocks() as app:
     with gr.Column(elem_classes="glass-panel"):
         gr.Markdown("<h1 style='text-align: center;'>⚕️ AI Stroke Prediction Clinical Dashboard</h1>")
         gr.Markdown("<p style='text-align: center;'>Complete the patient intake form below. The system automatically engineers interaction features, applies standard scaling, and assesses stroke risk.</p>")
@@ -124,7 +123,7 @@ with gr.Blocks(css=liquid_glass_css, theme=gr.themes.Base(neutral_hue="slate")) 
         final_input_list = [ui_elements_dict[col] for col in user_cols]
         submit_btn.click(fn=predict_stroke, inputs=final_input_list, outputs=output_display)
 
-# 7. LAUNCH COMMAND FOR RENDER
+# 7. LAUNCH COMMAND FOR RENDER (Fixed for Gradio 6.0)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    app.launch(server_name="0.0.0.0", server_port=port)
+    app.launch(server_name="0.0.0.0", server_port=port, css=liquid_glass_css, theme=gr.themes.Base(neutral_hue="slate"))
